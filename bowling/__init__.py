@@ -1,1 +1,1 @@
-from stream import ObservableStream
+from stream import ObservableStream, Observer
