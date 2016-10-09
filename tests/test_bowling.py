@@ -40,8 +40,8 @@ def test_frame(values, expected_is_finished):
     assert frame.is_finished is expected_is_finished
 
 
-
 @pytest.mark.parametrize('values, expected_is_finished', [
+    ([0, 0], True),
     ([10], False),
 ])
 def test_last_frame(values, expected_is_finished):
@@ -50,7 +50,6 @@ def test_last_frame(values, expected_is_finished):
     for _ in values:
         frame.add_throw(throws)
     assert frame.is_finished is expected_is_finished
-
 
 
 def _make_throws(values):
