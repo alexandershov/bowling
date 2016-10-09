@@ -1,0 +1,2 @@
+class ObservableStream(object):
+    pass
