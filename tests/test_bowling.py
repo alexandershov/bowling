@@ -1,6 +1,6 @@
 import pytest
 
-from bowling import Frame, LastFrame, ObservableStream, Observer
+from bowling import Frame, Game, LastFrame, ObservableStream, Observer
 
 
 class SavingObserver(Observer):
@@ -56,6 +56,17 @@ def test_last_frame(values, expected_is_finished):
     for _ in values:
         frame.add_throw(throws)
     assert frame.is_finished is expected_is_finished
+
+
+@pytest.mark.parametrize('values,expected_frame_scores', [
+    ([10], [10])
+])
+def test_game_score(values, expected_frame_scores):
+    game = Game()
+    for one_value in values:
+        game.throw(one_value)
+
+
 
 
 def _make_throws(values):

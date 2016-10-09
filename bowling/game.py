@@ -59,3 +59,8 @@ class LastFrame(Frame):
         if self.num_throws == self.max_num_throws:
             return True
         return False
+
+
+class Game(object):
+    def throw(self, value):
+        pass

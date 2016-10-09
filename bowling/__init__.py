@@ -1,2 +1,2 @@
-from game import Frame, LastFrame
-from stream import ObservableStream, Observer
+from bowling.game import Frame, Game, LastFrame
+from bowling.stream import ObservableStream, Observer

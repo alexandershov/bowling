@@ -18,7 +18,7 @@ class ObservableStream(object):
     def __iter__(self):
         return self
 
-    def next(self):
+    def __next__(self):
         value = self.values.popleft()
         for observer in self.observers:
             observer.on_new_value(value)
