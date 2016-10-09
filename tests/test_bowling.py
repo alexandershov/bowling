@@ -1,4 +1,6 @@
-from bowling import ObservableStream, Observer
+import pytest
+
+from bowling import Frame, ObservableStream, Observer
 
 
 class SavingObserver(Observer):
@@ -22,3 +24,22 @@ def test_observer():
     stream.unregister(observer)
     assert next(stream) == 2
     assert values == [1]
+
+
+@pytest.mark.parametrize('values, expected_is_finished', [
+    ([10], True),
+    ([9], False),
+])
+def test_frame(values, expected_is_finished):
+    throws = _make_throws(values)
+    frame = Frame()
+    for _ in values:
+        frame.add_throw(throws)
+    assert frame.is_finished is expected_is_finished
+
+
+def _make_throws(values):
+    stream = ObservableStream()
+    for one_value in values:
+        stream.add(one_value)
+    return stream
