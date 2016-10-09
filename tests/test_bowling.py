@@ -13,8 +13,12 @@ def test_observer():
     values = []
     observer = SavingObserver(values)
     stream = ObservableStream()
-    observer.observe(stream)
+    stream.register(observer)
     stream.add(1)
+    stream.add(2)
     assert values == []
     next(stream)
+    assert values == [1]
+    stream.unregister(observer)
+    assert next(stream) == 2
     assert values == [1]

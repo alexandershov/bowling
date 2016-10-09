@@ -1,5 +1,6 @@
 from collections import deque
 
+
 class ObservableStream(object):
     def __init__(self):
         self.observers = []
@@ -7,6 +8,9 @@ class ObservableStream(object):
 
     def register(self, observer):
         self.observers.append(observer)
+
+    def unregister(self, observer):
+        self.observers.remove(observer)
 
     def add(self, value):
         self.values.append(value)
@@ -24,6 +28,3 @@ class ObservableStream(object):
 class Observer(object):
     def on_new_value(self, value):
         raise NotImplementedError
-
-    def observe(self, observable):
-        observable.register(self)
