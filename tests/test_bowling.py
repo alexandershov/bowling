@@ -29,6 +29,8 @@ def test_observer():
 @pytest.mark.parametrize('values, expected_is_finished', [
     ([10], True),
     ([9], False),
+    # you got at max 2 throws in frame
+    ([0, 0], True),
 ])
 def test_frame(values, expected_is_finished):
     throws = _make_throws(values)
