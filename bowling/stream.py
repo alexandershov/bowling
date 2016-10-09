@@ -21,10 +21,10 @@ class ObservableStream(object):
     def __next__(self):
         value = self.values.popleft()
         for observer in self.observers:
-            observer.on_new_value(value)
+            observer.on_new_value(self, value)
         return value
 
 
 class Observer(object):
-    def on_new_value(self, value):
+    def on_new_value(self, observable, value):
         raise NotImplementedError

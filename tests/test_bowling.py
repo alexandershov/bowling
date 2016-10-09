@@ -7,7 +7,7 @@ class SavingObserver(Observer):
     def __init__(self, values):
         self.values = values
 
-    def on_new_value(self, value):
+    def on_new_value(self, observable, value):
         self.values.append(value)
 
 
@@ -32,12 +32,27 @@ def test_observer():
     # you got at max 2 throws in frame
     ([0, 0], True),
 ])
-def test_frame(values, expected_is_finished):
+def test_frame_is_finished(values, expected_is_finished):
     throws = _make_throws(values)
     frame = Frame()
     for _ in values:
         frame.add_throw(throws)
     assert frame.is_finished is expected_is_finished
+
+
+@pytest.mark.parametrize('values, expected_score', [
+    ([10], 10),
+    ([10, 9], 19),
+])
+def test_frame_score(values, expected_score):
+    throws = _make_throws(values)
+    frame = Frame()
+    for _ in values:
+        if not frame.is_finished:
+            frame.add_throw(throws)
+        else:
+            next(throws)
+    assert frame.score == expected_score
 
 
 @pytest.mark.parametrize('values, expected_is_finished', [
@@ -50,7 +65,7 @@ def test_frame(values, expected_is_finished):
     ([8, 1], True),
     ([9, 1, 10], True),
 ])
-def test_last_frame(values, expected_is_finished):
+def test_last_frame_is_finished(values, expected_is_finished):
     throws = _make_throws(values)
     frame = LastFrame()
     for _ in values:
@@ -58,15 +73,18 @@ def test_last_frame(values, expected_is_finished):
     assert frame.is_finished is expected_is_finished
 
 
+# TODO: unskip this test
 @pytest.mark.parametrize('values,expected_frame_scores', [
-    ([10], [10])
+    ([10], [10]),
+    ([5, 4], [9]),
+    ([5, 4, 6], [9]),
 ])
+@pytest.mark.skip
 def test_game_score(values, expected_frame_scores):
     game = Game()
     for one_value in values:
-        game.throw(one_value)
-
-
+        game.add_throw(one_value)
+    assert game.get_frame_scores() == expected_frame_scores
 
 
 def _make_throws(values):
