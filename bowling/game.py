@@ -1,4 +1,3 @@
-MAX_NUM_THROWS_IN_FRAME = 2
 PINS_IN_FRAME = 10
 
 
@@ -16,6 +15,8 @@ class BaseFrame(object):
 
 
 class Frame(BaseFrame):
+    MAX_NUM_THROWS_IN_FRAME = 2
+
     def __init__(self):
         self.score = 0
         self.num_throws = 0
@@ -31,8 +32,18 @@ class Frame(BaseFrame):
 
     @property
     def is_finished(self):
-        if self.num_throws == MAX_NUM_THROWS_IN_FRAME:
+        if self.num_throws == self.MAX_NUM_THROWS_IN_FRAME:
             return True
         if self.score == PINS_IN_FRAME:
+            return True
+        return False
+
+
+class LastFrame(Frame):
+    MAX_NUM_THROWS_IN_FRAME = 3
+
+    @property
+    def is_finished(self):
+        if self.num_throws == self.MAX_NUM_THROWS_IN_FRAME:
             return True
         return False
