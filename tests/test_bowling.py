@@ -42,7 +42,13 @@ def test_frame(values, expected_is_finished):
 
 @pytest.mark.parametrize('values, expected_is_finished', [
     ([0, 0], True),
+    ([9], False),
     ([10], False),
+    ([10, 10, 10], True),
+    ([10, 0], False),
+    ([9, 1], False),
+    ([8, 1], True),
+    ([9, 1, 10], True),
 ])
 def test_last_frame(values, expected_is_finished):
     throws = _make_throws(values)
