@@ -98,3 +98,8 @@ class Game(object):
 
     def get_frame_scores(self):
         return [frame.score for frame in self.frames]
+
+    @property
+    def score(self):
+        assert self.is_finished
+        return sum(self.get_frame_scores())

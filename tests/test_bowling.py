@@ -111,10 +111,19 @@ def test_game_is_finished(values, expected_is_finished):
 @pytest.mark.parametrize('values,expected_frame_scores', [
     ([10], [10]),
     ([10, 10], [20, 10]),
+    ([10] * 12, [30] * 10),
 ])
-def test_game_score(values, expected_frame_scores):
+def test_game_frame_score(values, expected_frame_scores):
     game = _perform_throws_in_game(values)
     assert game.get_frame_scores() == expected_frame_scores
+
+
+@pytest.mark.parametrize('values, expected_game_score', [
+    ([10] * 12, 300),
+])
+def test_game_score(values, expected_game_score):
+    game = _perform_throws_in_game(values)
+    assert game.score == expected_game_score
 
 
 def _perform_throws_in_game(values):
