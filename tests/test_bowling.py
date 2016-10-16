@@ -57,6 +57,9 @@ def test_frame_is_finished(frame_class, values, expected_is_finished):
     # 9 is from another frame
     (Frame, [10, 9], [10]),
     (Frame, [9, 1], [9, 1]),
+    (LastFrame, [0], [0]),
+    (LastFrame, [1, 2], [1, 2]),
+    (LastFrame, [10, 10, 10], [10, 10, 10]),
 ])
 def test_frame_throws(frame_class, values, expected_throws):
     frame = _perform_throws_in_frame(values, frame_class)
