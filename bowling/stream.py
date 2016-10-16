@@ -19,7 +19,10 @@ class ObservableStream(object):
         return self
 
     def __next__(self):
-        value = self.values.popleft()
+        try:
+            value = self.values.popleft()
+        except IndexError:
+            raise StopIteration
         for observer in self.observers:
             observer.on_new_value(self, value)
         return value
