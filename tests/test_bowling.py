@@ -29,14 +29,18 @@ def test_observer():
     assert values == [1]
 
 
-@pytest.mark.parametrize('values, expected_is_finished', [
-    ([10], True),
-    ([0], False),
-    ([0, 1], True),
-    ([10, 10, 10], True),
+@pytest.mark.parametrize('frame_class, values, expected_is_finished', [
+    (Frame, [10], True),
+    (Frame, [0], False),
+    (Frame, [0, 1], True),
+    (Frame, [10, 10, 10], True),
+    # strike in last frame gives another shot
+    (LastFrame, [10], False),
+    # not a strike/spare - only 2 shots
+    (LastFrame, [1, 1], True),
 ])
-def test_frame_is_finished(values, expected_is_finished):
-    frame = _perform_throws_in_frame(values, Frame)
+def test_frame_is_finished(frame_class, values, expected_is_finished):
+    frame = _perform_throws_in_frame(values, frame_class)
     assert frame.is_finished is expected_is_finished
 
 

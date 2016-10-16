@@ -10,6 +10,12 @@ class BaseFrame(object):
         """
         raise NotImplementedError
 
+    def on_max_score(self, throws):
+        """
+        :type throws: bowling.ObservableStream
+        """
+        raise NotImplementedError
+
 
 class Frame(BaseFrame, Observer):
     MAX_NUM_THROWS_IN_FRAME = 2
@@ -18,6 +24,7 @@ class Frame(BaseFrame, Observer):
         self.score = 0
         self.throws = []
         self.num_throws = 0
+        self.max_num_throws = 2
         self.num_next_balls_bonuses = 0
         self.is_finished = False
 
@@ -30,11 +37,15 @@ class Frame(BaseFrame, Observer):
         self.throws.append(value)
         self.add(value)
         if self.score == PINS_IN_FRAME:
-            self.num_next_balls_bonuses = 1 + self.MAX_NUM_THROWS_IN_FRAME - self.num_throws
-            throws.register(self)
+            self.on_max_score(throws)
+
+        if self.num_throws == self.max_num_throws:
             self.is_finished = True
-        if self.num_throws == self.MAX_NUM_THROWS_IN_FRAME:
-            self.is_finished = True
+
+    def on_max_score(self, throws):
+        self.num_next_balls_bonuses = 1 + self.max_num_throws - self.num_throws
+        throws.register(self)
+        self.is_finished = True
 
     def on_new_value(self, throws, value):
         if not self.num_next_balls_bonuses:
@@ -60,6 +71,9 @@ class LastFrame(Frame):
         if self.score == PINS_IN_FRAME:
             if self.max_num_throws < self.MAX_NUM_THROWS_IN_FRAME:
                 self.max_num_throws += 1
+
+    def on_max_score(self, throws):
+        pass
 
 
 class Game(object):
