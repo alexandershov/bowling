@@ -42,6 +42,9 @@ def test_frame_is_finished(values, expected_is_finished):
 
 @pytest.mark.parametrize('values,expected_throws', [
     ([10], [10]),
+    # 9 is from another frame
+    ([10, 9], [10]),
+    ([9, 1], [9, 1]),
 ])
 def test_frame_throws(values, expected_throws):
     frame = _perform_throws_in_frame(values, Frame)
