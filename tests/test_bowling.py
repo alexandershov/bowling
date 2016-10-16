@@ -3,7 +3,7 @@ import pytest
 from bowling import Frame, Game, LastFrame, ObservableStream, Observer
 
 
-class SavingObserver(Observer):
+class AppendingObserver(Observer):
     def __init__(self, values):
         self.values = values
 
@@ -13,7 +13,7 @@ class SavingObserver(Observer):
 
 def test_observer():
     values = []
-    observer = SavingObserver(values)
+    observer = AppendingObserver(values)
     stream = ObservableStream()
     stream.register(observer)
     stream.add(1)
@@ -27,8 +27,8 @@ def test_observer():
 
 
 @pytest.mark.parametrize('frame_class, values, expected_is_finished', [
-    (Frame, [10], True),
     (Frame, [0], False),
+    (Frame, [10], True),
     (Frame, [0, 1], True),
     (Frame, [10, 10, 10], True),
     # strike in last frame gives another shot
@@ -78,21 +78,12 @@ def test_frame_throws(frame_class, values, expected_throws):
     (LastFrame, [10], 10),
     (LastFrame, [10, 10], 20),
     (LastFrame, [10, 10, 10], 30),
+    (LastFrame, [9, 1], 10),
+    (LastFrame, [9, 1, 5], 15),
 ])
 def test_frame_score(frame_class, values, expected_score):
     frame = _perform_throws_in_frame(values, frame_class)
     assert frame.score == expected_score
-
-
-def _perform_throws_in_frame(values, frame_class):
-    throws = _make_throws(values)
-    frame = frame_class()
-    for _ in values:
-        if not frame.is_finished:
-            frame.add_throw(throws)
-        else:
-            next(throws)
-    return frame
 
 
 @pytest.mark.parametrize('values, expected_is_finished', [
@@ -113,7 +104,7 @@ def test_game_is_finished(values, expected_is_finished):
     ([10, 10], [20, 10]),
     ([10] * 12, [30] * 10),
 ])
-def test_game_frame_score(values, expected_frame_scores):
+def test_game_frame_scores(values, expected_frame_scores):
     game = _perform_throws_in_game(values)
     assert game.get_frame_scores() == expected_frame_scores
 
@@ -125,6 +116,17 @@ def test_game_frame_score(values, expected_frame_scores):
 def test_game_score(values, expected_game_score):
     game = _perform_throws_in_game(values)
     assert game.score == expected_game_score
+
+
+def _perform_throws_in_frame(values, frame_class):
+    throws = _make_throws(values)
+    frame = frame_class()
+    for _ in values:
+        if not frame.is_finished:
+            frame.add_throw(throws)
+        else:
+            next(throws)
+    return frame
 
 
 def _perform_throws_in_game(values):
