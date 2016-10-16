@@ -2,6 +2,7 @@ import pytest
 
 from bowling import Frame, Game, LastFrame, ObservableStream, Observer
 
+
 # TODO: unskip this test
 
 
@@ -30,16 +31,24 @@ def test_observer():
 
 @pytest.mark.parametrize('values, expected_is_finished', [
     ([10], True),
-    ([9], False),
-    # you got at max 2 throws in frame
-    ([0, 0], True),
+    ([0], False),
+    ([0, 1], True),
+    ([10, 10, 10], True),
 ])
 def test_frame_is_finished(values, expected_is_finished):
-    throws = _make_throws(values)
-    frame = Frame()
-    for _ in values:
-        frame.add_throw(throws)
+    frame = _perform_throws_in_frame(values, Frame)
     assert frame.is_finished is expected_is_finished
+
+
+def _perform_throws_in_frame(values, frame_class):
+    throws = _make_throws(values)
+    frame = frame_class()
+    for _ in values:
+        if not frame.is_finished:
+            frame.add_throw(throws)
+        else:
+            next(throws)
+    return frame
 
 
 @pytest.mark.skip
@@ -76,7 +85,6 @@ def test_last_frame_is_finished(values, expected_is_finished):
     for _ in values:
         frame.add_throw(throws)
     assert frame.is_finished is expected_is_finished
-
 
 
 @pytest.mark.skip
