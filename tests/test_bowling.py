@@ -66,21 +66,21 @@ def test_frame_throws(frame_class, values, expected_throws):
     assert frame.throws == expected_throws
 
 
-@pytest.mark.parametrize('values, expected_score', [
-    ([10], 10),
+@pytest.mark.parametrize('frame_class, values, expected_score', [
+    (Frame, [10], 10),
     # next after strike
-    ([10, 9], 19),
+    (Frame, [10, 9], 19),
     # 2 next after strike
-    ([10, 9, 9], 28),
+    (Frame, [10, 9, 9], 28),
     # only 2 next after strike
-    ([10, 9, 9, 1], 28),
+    (Frame, [10, 9, 9, 1], 28),
     # next after spare
-    ([9, 1, 8], 18),
+    (Frame, [9, 1, 8], 18),
     # only 1 next after spare
-    ([9, 1, 8, 1], 18),
+    (Frame, [9, 1, 8, 1], 18),
 ])
-def test_frame_score(values, expected_score):
-    frame = _perform_throws_in_frame(values, Frame)
+def test_frame_score(frame_class, values, expected_score):
+    frame = _perform_throws_in_frame(values, frame_class)
     assert frame.score == expected_score
 
 
