@@ -10,10 +10,6 @@ class BaseFrame(object):
         """
         raise NotImplementedError
 
-    @property
-    def is_finished(self):
-        raise NotImplementedError
-
 
 class Frame(BaseFrame, Observer):
     MAX_NUM_THROWS_IN_FRAME = 2
@@ -22,6 +18,7 @@ class Frame(BaseFrame, Observer):
         self.score = 0
         self.num_throws = 0
         self.num_next_balls_bonuses = 0
+        self.is_finished = False
 
     def add_throw(self, throws):
         """
@@ -33,6 +30,9 @@ class Frame(BaseFrame, Observer):
         if self.score == PINS_IN_FRAME:
             self.num_next_balls_bonuses = 1 + self.MAX_NUM_THROWS_IN_FRAME - self.num_throws
             throws.register(self)
+            self.is_finished = True
+        if self.num_throws == self.MAX_NUM_THROWS_IN_FRAME:
+            self.is_finished = True
 
     def on_new_value(self, throws, value):
         if not self.num_next_balls_bonuses:
@@ -44,14 +44,6 @@ class Frame(BaseFrame, Observer):
     def add(self, value):
         self.score += value
         self.num_throws += 1
-
-    @property
-    def is_finished(self):
-        if self.num_throws == self.MAX_NUM_THROWS_IN_FRAME:
-            return True
-        if self.score == PINS_IN_FRAME:
-            return True
-        return False
 
 
 class LastFrame(Frame):
@@ -66,12 +58,6 @@ class LastFrame(Frame):
         if self.score == PINS_IN_FRAME:
             if self.max_num_throws < self.MAX_NUM_THROWS_IN_FRAME:
                 self.max_num_throws += 1
-
-    @property
-    def is_finished(self):
-        if self.num_throws == self.max_num_throws:
-            return True
-        return False
 
 
 class Game(object):
