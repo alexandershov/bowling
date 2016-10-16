@@ -95,15 +95,33 @@ def _perform_throws_in_frame(values, frame_class):
     return frame
 
 
+@pytest.mark.parametrize('values, expected_is_finished', [
+    ([], False),
+    ([10], False),
+    ([10] * 11, False),
+    ([10] * 12, True),
+    ([1] * 19, False),
+    ([1] * 20, True),
+])
+def test_game_is_finished(values, expected_is_finished):
+    game = _perform_throws_in_game(values)
+    assert game.is_finished == expected_is_finished
+
+
 @pytest.mark.parametrize('values,expected_frame_scores', [
-    ([10], [10, 0]),
-    ([10, 10], [20, 10, 0]),
+    ([10], [10]),
+    ([10, 10], [20, 10]),
 ])
 def test_game_score(values, expected_frame_scores):
+    game = _perform_throws_in_game(values)
+    assert game.get_frame_scores() == expected_frame_scores
+
+
+def _perform_throws_in_game(values):
     game = Game()
     for one_value in values:
         game.add_throw(one_value)
-    assert game.get_frame_scores() == expected_frame_scores
+    return game
 
 
 def _make_throws(values):
