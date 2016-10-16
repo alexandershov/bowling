@@ -120,6 +120,7 @@ def test_game_frame_score(values, expected_frame_scores):
 
 @pytest.mark.parametrize('values, expected_game_score', [
     ([10] * 12, 300),
+    ([1] * 20, 20),
 ])
 def test_game_score(values, expected_game_score):
     game = _perform_throws_in_game(values)
