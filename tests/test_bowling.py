@@ -3,9 +3,6 @@ import pytest
 from bowling import Frame, Game, LastFrame, ObservableStream, Observer
 
 
-# TODO: unskip this test
-
-
 class SavingObserver(Observer):
     def __init__(self, values):
         self.values = values
@@ -98,12 +95,9 @@ def _perform_throws_in_frame(values, frame_class):
     return frame
 
 
-@pytest.mark.skip
 @pytest.mark.parametrize('values,expected_frame_scores', [
-    ([10], [10]),
-    ([5, 4], [9]),
-    ([5, 4, 6], [9]),
-    ([10, 6, 3], [18]),
+    ([10], [10, 0]),
+    ([10, 10], [20, 10, 0]),
 ])
 def test_game_score(values, expected_frame_scores):
     game = Game()

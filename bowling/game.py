@@ -77,14 +77,17 @@ class Game(object):
 
     def __init__(self):
         self.throws = ObservableStream()
-        self.frames = []
+        self.frames = [Frame()]
 
     def add_throw(self, value):
         self.throws.add(value)
-        if len(self.frames) == self.MAX_NUM_FRAMES - 1:
-            frame = LastFrame()
-        else:
-            frame = Frame()
+        cur_frame = self.frames[-1]
+        cur_frame.add_throw(self.throws)
+        if cur_frame.is_finished:
+            if len(self.frames) == self.MAX_NUM_FRAMES - 1:
+                self.frames.append(LastFrame())
+            else:
+                self.frames.append(Frame())
 
     def get_frame_scores(self):
-        return [10]
+        return [frame.score for frame in self.frames]
