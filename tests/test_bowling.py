@@ -78,6 +78,9 @@ def test_frame_throws(frame_class, values, expected_throws):
     (Frame, [9, 1, 8], 18),
     # only 1 next after spare
     (Frame, [9, 1, 8, 1], 18),
+    (LastFrame, [10], 10),
+    (LastFrame, [10, 10], 20),
+    (LastFrame, [10, 10, 10], 30),
 ])
 def test_frame_score(frame_class, values, expected_score):
     frame = _perform_throws_in_frame(values, frame_class)
