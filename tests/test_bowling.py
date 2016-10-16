@@ -119,8 +119,8 @@ def test_game_score(values, expected_game_score):
 
 
 def _perform_throws_in_frame(values, frame_class):
-    throws = _make_throws(values)
     frame = frame_class()
+    throws = _make_throws(values)
     for _ in values:
         if not frame.is_finished:
             frame.add_throw(throws)
