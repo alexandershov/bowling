@@ -40,6 +40,14 @@ def test_frame_is_finished(values, expected_is_finished):
     assert frame.is_finished is expected_is_finished
 
 
+@pytest.mark.parametrize('values,expected_throws', [
+    ([10], [10]),
+])
+def test_frame_throws(values, expected_throws):
+    frame = _perform_throws_in_frame(values, Frame)
+    assert frame.throws == expected_throws
+
+
 def _perform_throws_in_frame(values, frame_class):
     throws = _make_throws(values)
     frame = frame_class()

@@ -16,6 +16,7 @@ class Frame(BaseFrame, Observer):
 
     def __init__(self):
         self.score = 0
+        self.throws = []
         self.num_throws = 0
         self.num_next_balls_bonuses = 0
         self.is_finished = False
@@ -26,6 +27,7 @@ class Frame(BaseFrame, Observer):
         """
         assert not self.is_finished
         value = next(throws)
+        self.throws.append(value)
         self.add(value)
         if self.score == PINS_IN_FRAME:
             self.num_next_balls_bonuses = 1 + self.MAX_NUM_THROWS_IN_FRAME - self.num_throws
