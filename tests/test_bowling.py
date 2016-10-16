@@ -99,25 +99,6 @@ def _perform_throws_in_frame(values, frame_class):
 
 
 @pytest.mark.skip
-@pytest.mark.parametrize('values, expected_is_finished', [
-    ([0, 0], True),
-    ([9], False),
-    ([10], False),
-    ([10, 10, 10], True),
-    ([10, 0], False),
-    ([9, 1], False),
-    ([8, 1], True),
-    ([9, 1, 10], True),
-])
-def test_last_frame_is_finished(values, expected_is_finished):
-    throws = _make_throws(values)
-    frame = LastFrame()
-    for _ in values:
-        frame.add_throw(throws)
-    assert frame.is_finished is expected_is_finished
-
-
-@pytest.mark.skip
 @pytest.mark.parametrize('values,expected_frame_scores', [
     ([10], [10]),
     ([5, 4], [9]),

@@ -62,10 +62,6 @@ class Frame(BaseFrame, Observer):
 class LastFrame(Frame):
     MAX_NUM_THROWS_IN_FRAME = 3
 
-    def __init__(self):
-        super(LastFrame, self).__init__()
-        self.max_num_throws = 2
-
     def add(self, value):
         super(LastFrame, self).add(value)
         if self.score == PINS_IN_FRAME:
@@ -78,7 +74,6 @@ class LastFrame(Frame):
 
 class Game(object):
     MAX_NUM_FRAMES = 10
-    assert MAX_NUM_FRAMES > 0
 
     def __init__(self):
         self.throws = ObservableStream()
