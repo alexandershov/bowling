@@ -36,6 +36,14 @@ def test_observer():
     (Frame, [10, 10, 10], True),
     # strike in last frame gives another shot
     (LastFrame, [10], False),
+    # strike in last frame gives 2 another shots
+    (LastFrame, [10, 10], False),
+    # strike in last frame gives at most 2 another shots
+    (LastFrame, [10, 10, 10], True),
+    # spare in last frame gives another shot
+    (LastFrame, [9, 1], False),
+    # spare in last frame gives at most 1 another shot
+    (LastFrame, [9, 1, 1], True),
     # not a strike/spare - only 2 shots
     (LastFrame, [1, 1], True),
 ])
