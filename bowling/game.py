@@ -14,19 +14,20 @@ class BaseFrame(object):
 
     def add_throw(self, value):
         assert not self.is_finished
-        self.add(value)
-        num_bonus_throws = 0
+        self._add(value)
         if self.score == PINS_IN_FRAME:
-            if not self._on_max_score_fired:
-                self.on_max_score()
-                self._on_max_score_fired = True
-            num_bonus_throws = self._num_next_balls_bonuses
+            self._call_on_max_score_if_for_the_first_time()
 
         if self._num_throws == self.max_num_throws:
             self.is_finished = True
-        return num_bonus_throws
+        return self._num_next_balls_bonuses
 
-    def add(self, value):
+    def _call_on_max_score_if_for_the_first_time(self):
+        if not self._on_max_score_fired:
+            self.on_max_score()
+            self._on_max_score_fired = True
+
+    def _add(self, value):
         self.score += value
         self.throws.append(value)
         self._num_throws += 1
