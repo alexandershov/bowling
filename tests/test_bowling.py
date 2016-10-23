@@ -50,6 +50,16 @@ def test_frame_is_finished(frame_class, values, expected_is_finished):
     assert frame.is_finished is expected_is_finished
 
 
+@pytest.mark.parametrize('values, bonus_scores, expected_score', [
+    ([10], [3], 13),
+])
+def test_frame_add_bonus_score(values, bonus_scores, expected_score):
+    frame = _perform_throws_in_frame(values, Frame)
+    for to_add in bonus_scores:
+        frame.add_bonus_score(to_add)
+    assert frame.score == expected_score
+
+
 @pytest.mark.parametrize('frame_class, values,expected_throws', [
     (Frame, [10], [10]),
     # 9 is from another frame

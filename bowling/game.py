@@ -16,6 +16,12 @@ class BaseFrame(object):
         """
         raise NotImplementedError
 
+    def add_bonus_score(self, value):
+        """
+        :type value: numbers.Number
+        """
+        raise NotImplementedError
+
 
 class Frame(BaseFrame, Observer):
     def __init__(self):
@@ -55,6 +61,10 @@ class Frame(BaseFrame, Observer):
     def add(self, value):
         self.score += value
         self._num_throws += 1
+
+    def add_bonus_score(self, bonus_score):
+        assert self.is_finished
+        self.score += bonus_score
 
 
 class LastFrame(Frame):
