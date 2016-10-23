@@ -1,6 +1,6 @@
-PINS_IN_FRAME = 10
-
 from bowling.stream import ObservableStream, Observer
+
+PINS_IN_FRAME = 10
 
 
 class BaseFrame(object):
@@ -18,15 +18,13 @@ class BaseFrame(object):
 
 
 class Frame(BaseFrame, Observer):
-    MAX_NUM_THROWS_IN_FRAME = 2
-
     def __init__(self):
         self.score = 0
         self.throws = []
-        self.num_throws = 0
-        self.max_num_throws = 2
-        self.num_next_balls_bonuses = 0
         self.is_finished = False
+        self.max_num_throws = 2
+        self._num_throws = 0
+        self._num_next_balls_bonuses = 0
 
     def add_throw(self, throws):
         """
@@ -39,24 +37,24 @@ class Frame(BaseFrame, Observer):
         if self.score == PINS_IN_FRAME:
             self.on_max_score(throws)
 
-        if self.num_throws == self.max_num_throws:
+        if self._num_throws == self.max_num_throws:
             self.is_finished = True
 
     def on_max_score(self, throws):
-        self.num_next_balls_bonuses = 1 + self.max_num_throws - self.num_throws
+        self._num_next_balls_bonuses = 1 + self.max_num_throws - self._num_throws
         throws.register(self)
         self.is_finished = True
 
     def on_new_value(self, throws, value):
-        if not self.num_next_balls_bonuses:
+        if not self._num_next_balls_bonuses:
             throws.unregister(self)
             return
         self.score += value
-        self.num_next_balls_bonuses -= 1
+        self._num_next_balls_bonuses -= 1
 
     def add(self, value):
         self.score += value
-        self.num_throws += 1
+        self._num_throws += 1
 
 
 class LastFrame(Frame):
