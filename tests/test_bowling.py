@@ -10,6 +10,8 @@ from bowling import Frame, Game, LastFrame
     (Frame, [9, 1], True),
     # strike in last frame gives another shot
     (LastFrame, [10], False),
+    (LastFrame, [10, 0], False),
+    (LastFrame, [10, 0, 0], True),
     # strike in last frame gives 2 another shots
     (LastFrame, [10, 10], False),
     # strike in last frame gives at most 2 another shots
@@ -50,9 +52,9 @@ def test_frame_throws(frame_class, values, expected_throws):
 
 
 @pytest.mark.parametrize('frame_class, values, expected_score', [
-    (Frame, [10], 10),
-    (Frame, [9, 1], 10),
     (Frame, [8, 1], 9),
+    (Frame, [9, 1], 10),
+    (Frame, [10], 10),
     (LastFrame, [10], 10),
     (LastFrame, [10, 10], 20),
     (LastFrame, [10, 10, 10], 30),

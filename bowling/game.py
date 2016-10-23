@@ -1,71 +1,58 @@
 PINS_IN_FRAME = 10
+DEFAULT_NUM_THROWS = 2
 
 
 class BaseFrame(object):
-    def add_throw(self, value):
-        raise NotImplementedError
-
-    def on_max_score(self):
-        raise NotImplementedError
-
-    def add_bonus_score(self, value):
-        raise NotImplementedError
-
-
-class Frame(BaseFrame):
     def __init__(self):
         self.score = 0
-        self.throws = []
+        self.throws = []  # list[int]
         self.is_finished = False
-        self.max_num_throws = 2
+        self.max_num_throws = DEFAULT_NUM_THROWS
         self._num_throws = 0
         self._num_next_balls_bonuses = 0
+        self._on_max_score_fired = False
 
     def add_throw(self, value):
         assert not self.is_finished
-        self.throws.append(value)
         self.add(value)
         num_bonus_throws = 0
         if self.score == PINS_IN_FRAME:
-            self.on_max_score()
+            if not self._on_max_score_fired:
+                self.on_max_score()
+                self._on_max_score_fired = True
             num_bonus_throws = self._num_next_balls_bonuses
 
         if self._num_throws == self.max_num_throws:
             self.is_finished = True
         return num_bonus_throws
 
-    def on_max_score(self):
-        self._num_next_balls_bonuses = (self.max_num_throws - self._num_throws) + 1
-        self.is_finished = True
-
-    def on_new_value(self, throws, value):
-        if not self._num_next_balls_bonuses:
-            throws.unregister(self)
-            return
-        self.score += value
-        self._num_next_balls_bonuses -= 1
-
     def add(self, value):
         self.score += value
+        self.throws.append(value)
         self._num_throws += 1
 
     def add_bonus_score(self, bonus_score):
         assert self.is_finished
         self.score += bonus_score
 
+    def on_max_score(self):
+        raise NotImplementedError
+
+
+class Frame(BaseFrame):
+    def on_max_score(self):
+        self._num_next_balls_bonuses = (self.max_num_throws - self._num_throws) + 1
+        self.is_finished = True
+
 
 class LastFrame(Frame):
     MAX_NUM_THROWS_IN_FRAME = 3
 
-    def add(self, value):
-        super(LastFrame, self).add(value)
-        if self.score == PINS_IN_FRAME:
-            if self.max_num_throws < self.MAX_NUM_THROWS_IN_FRAME:
-                self.max_num_throws += 1
-
     def on_max_score(self):
-        # TODO: probably write something here
-        pass
+        self.max_num_throws += 1
+
+    def add_bonus_score(self, value):
+        raise AssertionError
 
 
 class Game(object):
