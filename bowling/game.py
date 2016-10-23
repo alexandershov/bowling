@@ -81,26 +81,36 @@ class Game(object):
     def add_throw(self, value):
         assert not self.is_finished
         self._throws.add(value)
-        if not self.frames or self.frames[-1].is_finished:
-            if len(self.frames) == self.MAX_NUM_FRAMES:
-                self.is_finished = True
-                return
-            else:
-                self._add_frame()
+        if self._needs_to_add_frame():
+            self._add_frame()
 
-        cur_frame = self.frames[-1]
-        cur_frame.add_throw(self._throws)
-        if len(self.frames) == self.MAX_NUM_FRAMES and cur_frame.is_finished:
+        self._cur_frame.add_throw(self._throws)
+        if self._is_last_frame_finished():
             self.is_finished = True
 
     def get_frame_scores(self):
         return [frame.score for frame in self.frames]
+
+    @property
+    def _cur_frame(self):
+        return self.frames[-1]
 
     def _add_frame(self):
         if len(self.frames) == self.MAX_NUM_FRAMES - 1:
             self.frames.append(LastFrame())
         else:
             self.frames.append(Frame())
+
+    def _needs_to_add_frame(self):
+        if self.is_finished:
+            return False
+        if not self.frames:
+            return True
+        return self._cur_frame.is_finished
+
+
+    def _is_last_frame_finished(self):
+        return len(self.frames) == self.MAX_NUM_FRAMES and self._cur_frame.is_finished
 
     @property
     def score(self):
