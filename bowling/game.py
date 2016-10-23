@@ -10,7 +10,7 @@ class BaseFrame(object):
         self.max_num_throws = DEFAULT_NUM_THROWS
         self._num_throws = 0
         self._num_next_balls_bonuses = 0
-        self._on_max_score_fired = False
+        self._on_max_score_called = False
 
     def add_throw(self, value):
         assert not self.is_finished
@@ -23,9 +23,9 @@ class BaseFrame(object):
         return self._num_next_balls_bonuses
 
     def _call_on_max_score_if_for_the_first_time(self):
-        if not self._on_max_score_fired:
+        if not self._on_max_score_called:
             self.on_max_score()
-            self._on_max_score_fired = True
+            self._on_max_score_called = True
 
     def _add(self, value):
         self.score += value
@@ -66,7 +66,7 @@ class Game(object):
 
     def add_throw(self, value):
         assert not self.is_finished
-        self._add_bonuses(value)
+        self._add_bonus_to_frames(value)
         if self._needs_to_add_frame():
             self._add_frame()
 
@@ -81,10 +81,13 @@ class Game(object):
     def get_frame_scores(self):
         return [frame.score for frame in self.frames]
 
-    def _add_bonuses(self, value):
+    def _add_bonus_to_frames(self, value):
         for frame in self._frames_waiting_for_bonus:
             frame.add_bonus_score(value)
             self._frames_waiting_for_bonus[frame] -= 1
+        self._remove_exhausted_frames_from_bonus_waiters()
+
+    def _remove_exhausted_frames_from_bonus_waiters(self):
         for frame, num_bonus_throws in list(self._frames_waiting_for_bonus.items()):
             if not num_bonus_throws:
                 self._remove_frame_from_bonus_waiters(frame)
@@ -106,8 +109,7 @@ class Game(object):
             self.frames.append(Frame())
 
     def _needs_to_add_frame(self):
-        if self.is_finished:
-            return False
+        assert not self.is_finished
         if not self.frames:
             return True
         return self._cur_frame.is_finished
