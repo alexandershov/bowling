@@ -30,6 +30,7 @@ def test_observer():
     (Frame, [0], False),
     (Frame, [10], True),
     (Frame, [0, 1], True),
+    (Frame, [9, 1], True),
     (Frame, [10, 10, 10], True),
     # strike in last frame gives another shot
     (LastFrame, [10], False),
