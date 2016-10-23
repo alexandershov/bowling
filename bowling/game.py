@@ -50,8 +50,7 @@ class Frame(BaseFrame, Observer):
         return num_bonus_throws
 
     def on_max_score(self, throws):
-        self._num_next_balls_bonuses = 1 + self.max_num_throws - self._num_throws
-        throws.register(self)
+        self._num_next_balls_bonuses = (self.max_num_throws - self._num_throws) + 1
         self.is_finished = True
 
     def on_new_value(self, throws, value):
@@ -90,19 +89,39 @@ class Game(object):
         self._throws = ObservableStream()
         self.frames = []
         self.is_finished = False
+        self._frames_waiting_for_bonus = {}  # Frame -> num_bonus_throws
 
     def add_throw(self, value):
         assert not self.is_finished
+        self._add_bonuses(value)
         self._throws.add(value)
         if self._needs_to_add_frame():
             self._add_frame()
 
-        self._cur_frame.add_throw(self._throws)
+        num_bonus_throws = self._cur_frame.add_throw(self._throws)
+        if num_bonus_throws:
+            assert self._cur_frame.is_finished
+            self._add_frame_to_bonus_waiters(self._cur_frame, num_bonus_throws)
+
         if self._is_last_frame_finished():
             self.is_finished = True
 
     def get_frame_scores(self):
         return [frame.score for frame in self.frames]
+
+    def _add_bonuses(self, value):
+        for frame in self._frames_waiting_for_bonus:
+            frame.add_bonus_score(value)
+            self._frames_waiting_for_bonus[frame] -= 1
+        for frame, num_bonus_throws in list(self._frames_waiting_for_bonus.items()):
+            if not num_bonus_throws:
+                self._remove_frame_from_bonus_waiters(frame)
+
+    def _add_frame_to_bonus_waiters(self, frame, num_bonus_throws):
+        self._frames_waiting_for_bonus[frame] = num_bonus_throws
+
+    def _remove_frame_from_bonus_waiters(self, frame):
+        del self._frames_waiting_for_bonus[frame]
 
     @property
     def _cur_frame(self):

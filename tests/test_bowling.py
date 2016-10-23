@@ -74,19 +74,10 @@ def test_frame_throws(frame_class, values, expected_throws):
     assert frame.throws == expected_throws
 
 
-# TODO: probably remove this test
 @pytest.mark.parametrize('frame_class, values, expected_score', [
     (Frame, [10], 10),
-    # next after strike
-    (Frame, [10, 9], 19),
-    # 2 next after strike
-    (Frame, [10, 9, 9], 28),
-    # only 2 next after strike
-    (Frame, [10, 9, 9, 1], 28),
-    # next after spare
-    (Frame, [9, 1, 8], 18),
-    # only 1 next after spare
-    (Frame, [9, 1, 8, 1], 18),
+    (Frame, [9, 1], 10),
+    (Frame, [8, 1], 9),
     (LastFrame, [10], 10),
     (LastFrame, [10, 10], 20),
     (LastFrame, [10, 10, 10], 30),
@@ -101,10 +92,13 @@ def test_frame_score(frame_class, values, expected_score):
 @pytest.mark.parametrize('frame_class, values, expected_num_bonus_throws', [
     (Frame, [10], 2),
     (Frame, [9, 1], 1),
+    (LastFrame, [10], 0),
+    (LastFrame, [10, 10, 10], 0),
 ])
 def test_frame_num_bonus_throws(frame_class, values, expected_num_bonus_throws):
     frame = frame_class()
     throws = _make_throws(values)
+    num_bonus_throws = None  # to silence linters
     for _ in values:
         num_bonus_throws = frame.add_throw(throws)
     assert num_bonus_throws == expected_num_bonus_throws
