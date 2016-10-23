@@ -125,4 +125,3 @@ def _perform_throws_in_game(values):
     for one_value in values:
         game.add_throw(one_value)
     return game
-

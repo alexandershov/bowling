@@ -1,1 +1,1 @@
-from bowling.game import Frame, Game, LastFrame
+from bowling.game import Frame, Game, LastFrame  # noqa
