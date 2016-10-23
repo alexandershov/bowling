@@ -60,7 +60,7 @@ def test_frame_add_bonus_score(values, bonus_scores, expected_score):
     assert frame.score == expected_score
 
 
-@pytest.mark.parametrize('frame_class, values,expected_throws', [
+@pytest.mark.parametrize('frame_class, values, expected_throws', [
     (Frame, [10], [10]),
     # 9 is from another frame
     (Frame, [10, 9], [10]),
@@ -74,6 +74,7 @@ def test_frame_throws(frame_class, values, expected_throws):
     assert frame.throws == expected_throws
 
 
+# TODO: probably remove this test
 @pytest.mark.parametrize('frame_class, values, expected_score', [
     (Frame, [10], 10),
     # next after strike
@@ -95,6 +96,18 @@ def test_frame_throws(frame_class, values, expected_throws):
 def test_frame_score(frame_class, values, expected_score):
     frame = _perform_throws_in_frame(values, frame_class)
     assert frame.score == expected_score
+
+
+@pytest.mark.parametrize('frame_class, values, expected_num_bonus_throws', [
+    (Frame, [10], 2),
+    (Frame, [9, 1], 1),
+])
+def test_frame_num_bonus_throws(frame_class, values, expected_num_bonus_throws):
+    frame = frame_class()
+    throws = _make_throws(values)
+    for _ in values:
+        num_bonus_throws = frame.add_throw(throws)
+    assert num_bonus_throws == expected_num_bonus_throws
 
 
 @pytest.mark.parametrize('values, expected_is_finished', [

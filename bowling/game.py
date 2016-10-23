@@ -40,11 +40,14 @@ class Frame(BaseFrame, Observer):
         value = next(throws)
         self.throws.append(value)
         self.add(value)
+        num_bonus_throws = 0
         if self.score == PINS_IN_FRAME:
             self.on_max_score(throws)
+            num_bonus_throws = self._num_next_balls_bonuses
 
         if self._num_throws == self.max_num_throws:
             self.is_finished = True
+        return num_bonus_throws
 
     def on_max_score(self, throws):
         self._num_next_balls_bonuses = 1 + self.max_num_throws - self._num_throws
