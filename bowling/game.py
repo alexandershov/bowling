@@ -1,29 +1,18 @@
-from bowling.stream import ObservableStream, Observer
-
 PINS_IN_FRAME = 10
 
 
 class BaseFrame(object):
-    def add_throw(self, throws):
-        """
-        :type throws: bowling.ObservableStream
-        """
+    def add_throw(self, value):
         raise NotImplementedError
 
-    def on_max_score(self, throws):
-        """
-        :type throws: bowling.ObservableStream
-        """
+    def on_max_score(self):
         raise NotImplementedError
 
     def add_bonus_score(self, value):
-        """
-        :type value: numbers.Number
-        """
         raise NotImplementedError
 
 
-class Frame(BaseFrame, Observer):
+class Frame(BaseFrame):
     def __init__(self):
         self.score = 0
         self.throws = []
@@ -32,24 +21,20 @@ class Frame(BaseFrame, Observer):
         self._num_throws = 0
         self._num_next_balls_bonuses = 0
 
-    def add_throw(self, throws):
-        """
-        :type throws: bowling.ObservableStream
-        """
+    def add_throw(self, value):
         assert not self.is_finished
-        value = next(throws)
         self.throws.append(value)
         self.add(value)
         num_bonus_throws = 0
         if self.score == PINS_IN_FRAME:
-            self.on_max_score(throws)
+            self.on_max_score()
             num_bonus_throws = self._num_next_balls_bonuses
 
         if self._num_throws == self.max_num_throws:
             self.is_finished = True
         return num_bonus_throws
 
-    def on_max_score(self, throws):
+    def on_max_score(self):
         self._num_next_balls_bonuses = (self.max_num_throws - self._num_throws) + 1
         self.is_finished = True
 
@@ -78,7 +63,8 @@ class LastFrame(Frame):
             if self.max_num_throws < self.MAX_NUM_THROWS_IN_FRAME:
                 self.max_num_throws += 1
 
-    def on_max_score(self, throws):
+    def on_max_score(self):
+        # TODO: probably write something here
         pass
 
 
@@ -86,7 +72,6 @@ class Game(object):
     MAX_NUM_FRAMES = 10
 
     def __init__(self):
-        self._throws = ObservableStream()
         self.frames = []
         self.is_finished = False
         self._frames_waiting_for_bonus = {}  # Frame -> num_bonus_throws
@@ -94,11 +79,10 @@ class Game(object):
     def add_throw(self, value):
         assert not self.is_finished
         self._add_bonuses(value)
-        self._throws.add(value)
         if self._needs_to_add_frame():
             self._add_frame()
 
-        num_bonus_throws = self._cur_frame.add_throw(self._throws)
+        num_bonus_throws = self._cur_frame.add_throw(value)
         if num_bonus_throws:
             assert self._cur_frame.is_finished
             self._add_frame_to_bonus_waiters(self._cur_frame, num_bonus_throws)

@@ -1,29 +1,6 @@
 import pytest
 
-from bowling import Frame, Game, LastFrame, ObservableStream, Observer
-
-
-class AppendingObserver(Observer):
-    def __init__(self, values):
-        self.values = values
-
-    def on_new_value(self, observable, value):
-        self.values.append(value)
-
-
-def test_observer():
-    values = []
-    observer = AppendingObserver(values)
-    stream = ObservableStream()
-    stream.register(observer)
-    stream.add(1)
-    stream.add(2)
-    assert values == []
-    next(stream)
-    assert values == [1]
-    stream.unregister(observer)
-    assert next(stream) == 2
-    assert values == [1]
+from bowling import Frame, Game, LastFrame
 
 
 @pytest.mark.parametrize('frame_class, values, expected_is_finished', [
@@ -31,7 +8,6 @@ def test_observer():
     (Frame, [10], True),
     (Frame, [0, 1], True),
     (Frame, [9, 1], True),
-    (Frame, [10, 10, 10], True),
     # strike in last frame gives another shot
     (LastFrame, [10], False),
     # strike in last frame gives 2 another shots
@@ -61,10 +37,9 @@ def test_frame_add_bonus_score(values, bonus_scores, expected_score):
 
 
 @pytest.mark.parametrize('frame_class, values, expected_throws', [
-    (Frame, [10], [10]),
-    # 9 is from another frame
-    (Frame, [10, 9], [10]),
+    (Frame, [9], [9]),
     (Frame, [9, 1], [9, 1]),
+    (Frame, [10], [10]),
     (LastFrame, [0], [0]),
     (LastFrame, [1, 2], [1, 2]),
     (LastFrame, [10, 10, 10], [10, 10, 10]),
@@ -97,10 +72,9 @@ def test_frame_score(frame_class, values, expected_score):
 ])
 def test_frame_num_bonus_throws(frame_class, values, expected_num_bonus_throws):
     frame = frame_class()
-    throws = _make_throws(values)
     num_bonus_throws = None  # to silence linters
-    for _ in values:
-        num_bonus_throws = frame.add_throw(throws)
+    for one_value in values:
+        num_bonus_throws = frame.add_throw(one_value)
     assert num_bonus_throws == expected_num_bonus_throws
 
 
@@ -138,12 +112,9 @@ def test_game_score(values, expected_game_score):
 
 def _perform_throws_in_frame(values, frame_class):
     frame = frame_class()
-    throws = _make_throws(values)
-    for _ in values:
-        if not frame.is_finished:
-            frame.add_throw(throws)
-        else:
-            next(throws)
+    for one_value in values:
+        assert not frame.is_finished
+        frame.add_throw(one_value)
     return frame
 
 
@@ -153,9 +124,3 @@ def _perform_throws_in_game(values):
         game.add_throw(one_value)
     return game
 
-
-def _make_throws(values):
-    stream = ObservableStream()
-    for one_value in values:
-        stream.add(one_value)
-    return stream
