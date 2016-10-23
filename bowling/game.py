@@ -108,7 +108,6 @@ class Game(object):
             return True
         return self._cur_frame.is_finished
 
-
     def _is_last_frame_finished(self):
         return len(self.frames) == self.MAX_NUM_FRAMES and self._cur_frame.is_finished
 
